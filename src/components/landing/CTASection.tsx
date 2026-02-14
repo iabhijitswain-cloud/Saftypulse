@@ -23,7 +23,7 @@ export const CTASection = () => {
             Your Safety Shouldn't Be Silent
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Join thousands of users who trust SafePulse to keep them protected. 
+            Join thousands of users who trust SafetyPulse to keep them protected. 
             Set up in under 2 minutes — completely free.
           </p>
           <Button
@@ -31,7 +31,7 @@ export const CTASection = () => {
             className="bg-emergency hover:bg-emergency/90 text-emergency-foreground px-10 py-6 text-base font-semibold rounded-full shadow-lg shadow-emergency/25"
             onClick={() => navigate('/auth')}
           >
-            Get SafePulse Free
+            Get SafetyPulse Free
             <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
         </motion.div>

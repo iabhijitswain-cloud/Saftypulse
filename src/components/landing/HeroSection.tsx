@@ -103,7 +103,7 @@ export const HeroSection = () => {
               <div className="absolute inset-0 blur-3xl opacity-30 bg-emergency/40 rounded-full scale-75" />
               <img
                 src={phoneMockup}
-                alt="SafePulse SOS interface on smartphone"
+                alt="SafetyPulse SOS interface on smartphone"
                 className="relative z-10 w-full max-w-md drop-shadow-2xl"
               />
             </div>
