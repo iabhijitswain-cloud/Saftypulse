@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* SafePulse Design System - Dark Mode Emergency Theme */
+
+@layer base {
+  :root {
+    --background: 220 15% 10%;
+    --foreground: 0 0% 98%;
+
+    --card: 220 15% 13%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 4%;
+
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 60%;
+
+    --accent: 0 0% 15%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --emergency: 0 84% 50%;
+    --emergency-foreground: 0 0% 100%;
+    --emergency-glow: 0 84% 50%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 4%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+
+    --safe: 142 76% 36%;
+    --safe-foreground: 0 0% 100%;
+
+    --border: 0 0% 14%;
+    --input: 0 0% 14%;
+    --ring: 0 84% 50%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 5%;
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 0 84% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 12%;
+    --sidebar-accent-foreground: 0 0% 90%;
+    --sidebar-border: 0 0% 14%;
+    --sidebar-ring: 0 84% 50%;
+  }
+
+  .dark {
+    --background: 220 15% 10%;
+    --foreground: 0 0% 98%;
+    --card: 220 15% 13%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 4%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 0 0% 15%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14%;
+    --input: 0 0% 14%;
+    --ring: 0 84% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer utilities {
+  .emergency-glow {
+    box-shadow: 0 0 60px 20px hsl(var(--emergency) / 0.3),
+                0 0 100px 40px hsl(var(--emergency) / 0.15);
+  }
+  
+  .emergency-pulse {
+    animation: emergency-pulse 2s ease-in-out infinite;
+  }
+  
+  .countdown-pulse {
+    animation: countdown-pulse 1s ease-in-out infinite;
+  }
+
+  .safe-glow {
+    box-shadow: 0 0 40px 10px hsl(var(--success) / 0.3);
+  }
+  
+  @keyframes emergency-pulse {
+    0%, 100% {
+      box-shadow: 0 0 40px 10px hsl(var(--emergency) / 0.4);
+    }
+    50% {
+      box-shadow: 0 0 80px 30px hsl(var(--emergency) / 0.6);
+    }
+  }
+  
+  @keyframes countdown-pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
+}
