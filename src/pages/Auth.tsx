@@ -91,7 +91,7 @@ const Auth = () => {
     } else {
       toast({
         title: 'Guest mode activated',
-        description: 'You can now use SafePulse. Create an account to save your data.',
+        description: 'You can now use SafetyPulse. Create an account to save your data.',
       });
     }
 
@@ -106,7 +106,7 @@ const Auth = () => {
           <Shield className="w-7 h-7 text-emergency" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-foreground">SafePulse</h1>
+          <h1 className="text-2xl font-bold text-foreground">SafetyPulse</h1>
           <p className="text-sm text-muted-foreground">Personal Safety System</p>
         </div>
       </div>

@@ -38,7 +38,7 @@ export const SettingsPanel = ({ open, onOpenChange }: SettingsPanelProps) => {
             Settings
           </SheetTitle>
           <SheetDescription className="text-muted-foreground">
-            Configure your SafePulse preferences
+            Configure your SafetyPulse preferences
           </SheetDescription>
         </SheetHeader>
 

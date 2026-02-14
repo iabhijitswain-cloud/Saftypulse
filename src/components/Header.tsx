@@ -24,7 +24,7 @@ export const Header = () => {
             <Shield className="w-6 h-6 text-emergency" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-foreground tracking-tight">SafePulse</h1>
+            <h1 className="text-lg font-bold text-foreground tracking-tight">SafetyPulse</h1>
             <p className="text-xs text-muted-foreground">Silent Protection</p>
           </div>
         </div>

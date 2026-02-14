@@ -28,7 +28,7 @@ const menuItems = [
   { icon: Phone, label: 'Emergency Numbers', description: 'Local emergency services' },
   { icon: Share2, label: 'Share Location', description: 'Send your location now' },
   { icon: FileText, label: 'Safety Tips', description: 'Learn safety best practices' },
-  { icon: HelpCircle, label: 'Help & Support', description: 'Get help with SafePulse' },
+  { icon: HelpCircle, label: 'Help & Support', description: 'Get help with SafetyPulse' },
   { icon: Star, label: 'Rate Us', description: 'Leave a review' },
 ];
 
