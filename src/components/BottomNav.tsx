@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
-import { Shield, Users, Settings } from 'lucide-react';
+import { Shield, Users, Settings, Clock } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-type View = 'user' | 'volunteer';
+type View = 'user' | 'volunteer' | 'moments';
 
 interface BottomNavProps {
   currentView?: View;
@@ -14,7 +14,7 @@ export const BottomNav = ({ currentView = 'user', onViewChange }: BottomNavProps
   const location = useLocation();
   const isSettings = location.pathname === '/settings';
 
-  const handleTabClick = (tabId: 'user' | 'volunteer' | 'settings') => {
+  const handleTabClick = (tabId: View | 'settings') => {
     if (tabId === 'settings') {
       navigate('/settings');
     } else {
@@ -28,6 +28,7 @@ export const BottomNav = ({ currentView = 'user', onViewChange }: BottomNavProps
   const tabs = [
     { id: 'user' as const, icon: Shield, label: 'My Safety' },
     { id: 'volunteer' as const, icon: Users, label: 'Volunteer' },
+    { id: 'moments' as const, icon: Clock, label: 'Moments' },
     { id: 'settings' as const, icon: Settings, label: 'Settings' },
   ];
 
