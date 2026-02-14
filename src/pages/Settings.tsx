@@ -19,7 +19,7 @@ import { useNavigate } from 'react-router-dom';
 const Settings = () => {
   const { user, isGuest, signOut, isLoading } = useAuth();
   const navigate = useNavigate();
-  const [currentView, setCurrentView] = useState<'user' | 'volunteer'>('user');
+  const [currentView, setCurrentView] = useState<'user' | 'volunteer' | 'moments'>('user');
 
   const handleSignOut = async () => {
     await signOut();

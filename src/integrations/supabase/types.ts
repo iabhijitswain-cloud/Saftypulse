@@ -14,6 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      emergency_notes: {
+        Row: {
+          alert_id: string
+          content: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          alert_id: string
+          content: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          alert_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "emergency_notes_alert_id_fkey"
+            columns: ["alert_id"]
+            isOneToOne: false
+            referencedRelation: "sos_alerts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -43,27 +75,36 @@ export type Database = {
       }
       sos_alerts: {
         Row: {
+          alert_type: string
           created_at: string
+          description: string | null
           id: string
           is_stealth: boolean
+          location_text: string | null
           resolved_at: string | null
           status: string
           triggered_at: string
           user_id: string
         }
         Insert: {
+          alert_type?: string
           created_at?: string
+          description?: string | null
           id?: string
           is_stealth?: boolean
+          location_text?: string | null
           resolved_at?: string | null
           status?: string
           triggered_at?: string
           user_id: string
         }
         Update: {
+          alert_type?: string
           created_at?: string
+          description?: string | null
           id?: string
           is_stealth?: boolean
+          location_text?: string | null
           resolved_at?: string | null
           status?: string
           triggered_at?: string
