@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { contactSchema } from '@/lib/validations';
 
 export interface TrustedContact {
   id: string;
@@ -18,12 +19,6 @@ export interface ContactInput {
   phone_number: string;
   relationship?: string;
 }
-
-// E.164 phone number validation
-const isValidE164 = (phone: string): boolean => {
-  const e164Regex = /^\+[1-9]\d{1,14}$/;
-  return e164Regex.test(phone);
-};
 
 export const useTrustedContacts = () => {
   const { user } = useAuth();
@@ -68,11 +63,11 @@ export const useTrustedContacts = () => {
   const addContact = async (input: ContactInput): Promise<boolean> => {
     if (!user) return false;
 
-    // Validate E.164 format
-    if (!isValidE164(input.phone_number)) {
+    const parsed = contactSchema.safeParse(input);
+    if (!parsed.success) {
       toast({
-        title: 'Invalid Phone Number',
-        description: 'Please use E.164 format (e.g., +1234567890)',
+        title: 'Validation Error',
+        description: parsed.error.errors[0].message,
         variant: 'destructive',
       });
       return false;
@@ -113,14 +108,17 @@ export const useTrustedContacts = () => {
   const updateContact = async (id: string, input: Partial<ContactInput>): Promise<boolean> => {
     if (!user) return false;
 
-    // Validate E.164 format if phone is being updated
-    if (input.phone_number && !isValidE164(input.phone_number)) {
-      toast({
-        title: 'Invalid Phone Number',
-        description: 'Please use E.164 format (e.g., +1234567890)',
-        variant: 'destructive',
-      });
-      return false;
+    // Validate phone if provided
+    if (input.phone_number) {
+      const parsed = contactSchema.shape.phone_number.safeParse(input.phone_number);
+      if (!parsed.success) {
+        toast({
+          title: 'Validation Error',
+          description: parsed.error.errors[0].message,
+          variant: 'destructive',
+        });
+        return false;
+      }
     }
 
     try {
