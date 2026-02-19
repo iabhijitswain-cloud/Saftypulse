@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Shield, Mail, Lock, User, Loader2, UserPlus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { loginSchema, signupSchema } from '@/lib/validations';
 
 const Auth = () => {
   const { user, isLoading, signIn, signUp, signInAsGuest } = useAuth();
@@ -35,9 +36,19 @@ const Auth = () => {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
 
-    const { error } = await signIn(loginEmail, loginPassword);
+    const parsed = loginSchema.safeParse({ email: loginEmail, password: loginPassword });
+    if (!parsed.success) {
+      toast({
+        title: 'Validation Error',
+        description: parsed.error.errors[0].message,
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    const { error } = await signIn(parsed.data.email, parsed.data.password);
 
     if (error) {
       toast({
@@ -57,9 +68,19 @@ const Auth = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
 
-    const { error } = await signUp(signupEmail, signupPassword, signupName);
+    const parsed = signupSchema.safeParse({ email: signupEmail, password: signupPassword, displayName: signupName || undefined });
+    if (!parsed.success) {
+      toast({
+        title: 'Validation Error',
+        description: parsed.error.errors[0].message,
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    const { error } = await signUp(parsed.data.email, parsed.data.password, parsed.data.displayName);
 
     if (error) {
       toast({

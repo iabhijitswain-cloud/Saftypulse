@@ -223,6 +223,10 @@ export type Database = {
     Functions: {
       has_active_sos: { Args: { target_user_id: string }; Returns: boolean }
       is_owner: { Args: { record_user_id: string }; Returns: boolean }
+      is_trusted_contact_of: {
+        Args: { location_owner_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
