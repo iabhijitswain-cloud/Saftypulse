@@ -99,13 +99,8 @@ export const SOSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const getLocation = useCallback((): Promise<LocationData | null> => {
     return new Promise((resolve) => {
       if (!navigator.geolocation) {
-        // Fallback to mock data
-        resolve({
-          latitude: 40.7128,
-          longitude: -74.0060,
-          address: 'Location unavailable',
-          accuracy: 0,
-        });
+        console.warn('Geolocation is not supported by this browser.');
+        resolve(null);
         return;
       }
 
@@ -119,18 +114,12 @@ export const SOSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           setLocation(loc);
           resolve(loc);
         },
-        () => {
-          // Fallback on error
-          const fallback: LocationData = {
-            latitude: 40.7128,
-            longitude: -74.0060,
-            address: 'Location access denied',
-            accuracy: 0,
-          };
-          setLocation(fallback);
-          resolve(fallback);
+        (error) => {
+          console.error('Geolocation error:', error);
+          // Resolve null on error instead of mocked fake coordinates
+          resolve(null);
         },
-        { enableHighAccuracy: true, timeout: 10000 }
+        { enableHighAccuracy: true, timeout: 30000, maximumAge: 0 }
       );
     });
   }, []);
