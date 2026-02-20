@@ -45,9 +45,9 @@ interface SOSContextType {
 const SOSContext = createContext<SOSContextType | undefined>(undefined);
 
 const MOCK_VOLUNTEERS: Volunteer[] = [
-  { id: '1', name: 'Officer Martinez', distance: 0.3, status: 'available' },
-  { id: '2', name: 'Dr. Patel', distance: 0.8, status: 'available' },
-  { id: '3', name: 'James Wilson', distance: 1.2, status: 'available' },
+  { id: '1', name: 'Inspector Sharma', distance: 0.3, status: 'available' },
+  { id: '2', name: 'Dr. Gupta', distance: 0.8, status: 'available' },
+  { id: '3', name: 'Rahul Verma', distance: 1.2, status: 'available' },
 ];
 
 const COUNTDOWN_DURATION = 300; // 5 minutes in seconds
@@ -202,10 +202,10 @@ export const SOSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (!user) return;
 
     setState('triggered');
-    
+
     // Get location first
     const loc = await getLocation();
-    
+
     // Reset contacts to pending
     setTrustedContacts((prev) => prev.map(c => ({ ...c, status: 'pending' as const })));
     setNearbyVolunteers(MOCK_VOLUNTEERS.map(v => ({ ...v, status: 'available' as const })));
@@ -236,10 +236,29 @@ export const SOSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           accuracy: loc.accuracy,
         });
       }
+
+      // 4. QUEUE NOTIFICATIONS TO GUARDIANS
+      // Fetch trusted contacts that are in the user's Guardian Circle settings
+      const { data: contacts } = await supabase
+        .from('trusted_contacts')
+        .select('*')
+        .eq('user_id', user.id);
+
+      if (contacts && contacts.length > 0) {
+        const notifications = contacts.map(contact => ({
+          user_id: user.id,
+          alert_id: alert.id,
+          recipient_phone: contact.phone_number,
+          message_body: `EMERGENCY SOS: A user has activated their SOS signal. They may be in danger. Location: https://maps.google.com/?q=${loc?.latitude || 0},${loc?.longitude || 0}`,
+          status: 'pending'
+        }));
+
+        await (supabase as any).from('notification_queue').insert(notifications);
+      }
     } catch (error) {
       console.error('Error creating SOS alert:', error);
     }
-    
+
     setTimeout(() => {
       setState('recording');
     }, 500);
@@ -260,14 +279,14 @@ export const SOSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (!pinData) {
       setState('cancelled');
       setIsRecording(false);
-      
+
       if (currentAlertId) {
         await supabase
           .from('sos_alerts')
           .update({ status: 'cancelled', resolved_at: new Date().toISOString() })
           .eq('id', currentAlertId);
       }
-      
+
       return 'success';
     }
 
@@ -278,14 +297,14 @@ export const SOSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       // Appear to cancel but continue in stealth mode
       setState('duress');
       setIsRecording(false);
-      
+
       if (currentAlertId) {
         await supabase
           .from('sos_alerts')
           .update({ status: 'duress', is_stealth: true })
           .eq('id', currentAlertId);
       }
-      
+
       return 'duress';
     }
 
@@ -293,14 +312,14 @@ export const SOSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (inputHash === pinData.pin_hash) {
       setState('cancelled');
       setIsRecording(false);
-      
+
       if (currentAlertId) {
         await supabase
           .from('sos_alerts')
           .update({ status: 'cancelled', resolved_at: new Date().toISOString() })
           .eq('id', currentAlertId);
       }
-      
+
       return 'success';
     }
 
@@ -311,7 +330,7 @@ export const SOSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const resolveEmergency = useCallback(async () => {
     setState('resolved');
     setIsRecording(false);
-    
+
     if (currentAlertId) {
       await supabase
         .from('sos_alerts')

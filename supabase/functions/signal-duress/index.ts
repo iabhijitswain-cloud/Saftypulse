@@ -76,8 +76,7 @@ serve(async (req: Request) => {
         const { data: contacts } = await supabaseClient
             .from('trusted_contacts')
             .select('*')
-            .eq('user_id', user.id)
-            .eq('is_verified', true);
+            .eq('user_id', user.id);
 
         if (contacts && contacts.length > 0) {
             const notifications = contacts.map((contact: any) => ({

@@ -22,14 +22,14 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  Users, 
-  Plus, 
-  Phone, 
-  User, 
-  Heart, 
-  Edit2, 
-  Trash2, 
+import {
+  Users,
+  Plus,
+  Phone,
+  User,
+  Heart,
+  Edit2,
+  Trash2,
   CheckCircle2,
   MessageSquare,
   Loader2
@@ -39,7 +39,7 @@ import { useToast } from '@/hooks/use-toast';
 export const GuardianCircle = () => {
   const { contacts, isLoading, addContact, updateContact, deleteContact } = useTrustedContacts();
   const { toast } = useToast();
-  
+
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingContact, setEditingContact] = useState<TrustedContact | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
@@ -171,14 +171,14 @@ export const GuardianCircle = () => {
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
-                      placeholder="+1234567890"
+                      placeholder="+919876543210"
                       value={formData.phone_number}
                       onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
                       className="pl-10 bg-muted border-border"
                     />
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Include country code (e.g., +1 for US)
+                    Include country code (e.g., +91 for India)
                   </p>
                 </div>
 
