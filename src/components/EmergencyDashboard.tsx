@@ -6,7 +6,7 @@ import { Progress } from '@/components/ui/progress';
 export const EmergencyDashboard = () => {
   const { state, location, isRecording, recordingProgress, trustedContacts } = useSOS();
 
-  const isActive = state === 'triggered' || state === 'recording' || state === 'countdown' || state === 'duress';
+  const isActive = state === 'triggered' || state === 'recording' || state === 'countdown';
 
   if (!isActive) return null;
 
@@ -81,9 +81,8 @@ export const EmergencyDashboard = () => {
         className="bg-card rounded-xl p-4 border border-border"
       >
         <div className="flex items-center gap-3 mb-3">
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-            isRecording ? 'bg-emergency/20' : 'bg-success/20'
-          }`}>
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isRecording ? 'bg-emergency/20' : 'bg-success/20'
+            }`}>
             <Mic className={`w-5 h-5 ${isRecording ? 'text-emergency animate-pulse' : 'text-success'}`} />
           </div>
           <div className="flex-1">
@@ -118,7 +117,7 @@ export const EmergencyDashboard = () => {
             </p>
           </div>
         </div>
-        
+
         <div className="space-y-3">
           {trustedContacts.map((contact, index) => (
             <motion.div
@@ -142,12 +141,11 @@ export const EmergencyDashboard = () => {
               </div>
               <div className="flex items-center gap-2">
                 {getStatusIcon(contact.status)}
-                <span className={`text-xs font-medium ${
-                  contact.status === 'responded' ? 'text-success' :
-                  contact.status === 'notified' ? 'text-warning' :
-                  contact.status === 'failed' ? 'text-emergency' :
-                  'text-muted-foreground'
-                }`}>
+                <span className={`text-xs font-medium ${contact.status === 'responded' ? 'text-success' :
+                    contact.status === 'notified' ? 'text-warning' :
+                      contact.status === 'failed' ? 'text-emergency' :
+                        'text-muted-foreground'
+                  }`}>
                   {getStatusText(contact.status)}
                 </span>
               </div>

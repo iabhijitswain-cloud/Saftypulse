@@ -1,26 +1,37 @@
 import { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Separator } from '@/components/ui/separator';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Shield, Mail, Lock, User, Loader2, UserPlus } from 'lucide-react';
+import { Shield, Mail, Lock, User, Loader2, UserPlus, Eye, EyeOff, Facebook, Chrome, Smartphone, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { loginSchema, signupSchema } from '@/lib/validations';
+import { z } from 'zod';
 
 const Auth = () => {
   const { user, isLoading, signIn, signUp, signInAsGuest } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  // Form states
+  // Login State
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
+
+  // Signup State
+  const [signupName, setSignupName] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
-  const [signupName, setSignupName] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
   if (isLoading) {
     return (
@@ -69,6 +80,15 @@ const Auth = () => {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (signupPassword !== confirmPassword) {
+      toast({
+        title: 'Validation Error',
+        description: "Passwords do not match.",
+        variant: 'destructive',
+      });
+      return;
+    }
+
     const parsed = signupSchema.safeParse({ email: signupEmail, password: signupPassword, displayName: signupName || undefined });
     if (!parsed.success) {
       toast({
@@ -80,13 +100,18 @@ const Auth = () => {
     }
 
     setIsSubmitting(true);
-    const { error } = await signUp(parsed.data.email, parsed.data.password, parsed.data.displayName);
+    const { data, error } = await signUp(parsed.data.email, parsed.data.password, parsed.data.displayName);
 
     if (error) {
       toast({
         title: 'Sign up failed',
         description: error.message,
         variant: 'destructive',
+      });
+    } else if (data?.session) {
+      toast({
+        title: 'Account created!',
+        description: 'You have been successfully signed in.',
       });
     } else {
       toast({
@@ -100,7 +125,6 @@ const Auth = () => {
 
   const handleGuestMode = async () => {
     setIsSubmitting(true);
-
     const { error } = await signInAsGuest();
 
     if (error) {
@@ -115,192 +139,230 @@ const Auth = () => {
         description: 'You can now use SafetyPulse. Create an account to save your data.',
       });
     }
-
     setIsSubmitting(false);
   };
 
-  return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-      {/* Logo */}
-      <div className="flex items-center gap-3 mb-8">
-        <div className="w-12 h-12 rounded-full bg-emergency/20 flex items-center justify-center">
-          <Shield className="w-7 h-7 text-emergency" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">SafetyPulse</h1>
-          <p className="text-sm text-muted-foreground">Personal Safety System</p>
-        </div>
-      </div>
+  const SocialButton = ({ icon: Icon, label, onClick }: { icon: any, label: string, onClick?: () => void }) => (
+    <Button variant="outline" className="w-full flex items-center justify-center gap-2 h-11 hover:bg-muted transition-colors rounded-xl" onClick={onClick}>
+      <Icon className="w-5 h-5" />
+      <span className="sr-only sm:not-sr-only sm:inline-block">{label}</span>
+      <span className="sm:hidden">{label.split(' ')[0]}</span>
+    </Button>
+  );
 
-      <Card className="w-full max-w-md bg-card border-border">
-        <Tabs defaultValue="signin" className="w-full">
-          <CardHeader>
-            <TabsList className="grid w-full grid-cols-2 bg-muted">
-              <TabsTrigger value="signin">Sign In</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
+  return (
+    <div className="min-h-screen w-full flex items-center justify-center p-4 bg-background relative overflow-hidden">
+      {/* Background Decoration */}
+      <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-emergency/5 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-blue-500/5 blur-[100px] pointer-events-none" />
+
+      {/* Back Button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute top-4 left-4 z-50 text-muted-foreground hover:text-foreground"
+        onClick={() => navigate('/')}
+      >
+        <ArrowLeft className="w-6 h-6" />
+      </Button>
+
+      <Tabs defaultValue="signin" className="w-full max-w-[480px]">
+        <div className="flex flex-col items-center mb-8 space-y-2">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emergency to-red-600 flex items-center justify-center shadow-lg shadow-emergency/20 mb-2">
+            <Shield className="w-8 h-8 text-white" />
+          </div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground text-center">SafetyPulse</h1>
+          <p className="text-muted-foreground text-center text-sm max-w-xs">
+            Your personal safety network. Stay connected, stay safe.
+          </p>
+        </div>
+
+        <Card className="border-border/50 bg-card/50 backdrop-blur-xl shadow-2xl rounded-2xl overflow-hidden">
+          <CardHeader className="pb-0">
+            <TabsList className="grid w-full grid-cols-2 h-12 rounded-xl bg-muted/50 p-1">
+              <TabsTrigger value="signin" className="rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-sm font-medium">
+                Sign In
+              </TabsTrigger>
+              <TabsTrigger value="signup" className="rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-sm font-medium">
+                Create Account
+              </TabsTrigger>
             </TabsList>
           </CardHeader>
 
-          <CardContent className="space-y-4">
-            {/* Sign In Tab */}
-            <TabsContent value="signin" className="space-y-4 mt-0">
-              <CardDescription className="text-center text-muted-foreground">
-                Sign in to access your emergency contacts and settings
-              </CardDescription>
-
-              <form onSubmit={handleSignIn} className="space-y-4">
+          <CardContent className="pt-6 pb-6 px-6 sm:px-8">
+            <TabsContent value="signin" className="mt-0 space-y-5">
+              <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="login-email" className="text-foreground">
-                    Email
-                  </Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Label htmlFor="email">Email Address</Label>
+                  <div className="relative group">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-foreground transition-colors" />
                     <Input
-                      id="login-email"
-                      type="email"
-                      placeholder="you@example.com"
+                      id="email"
+                      placeholder="name@example.com"
+                      className="pl-9 h-11 bg-muted/30 border-border/50 focus:border-emergency/50 focus:ring-emergency/20 rounded-xl transition-all"
                       value={loginEmail}
                       onChange={(e) => setLoginEmail(e.target.value)}
-                      className="pl-10 bg-muted border-border"
-                      required
                     />
                   </div>
                 </div>
-
                 <div className="space-y-2">
-                  <Label htmlFor="login-password" className="text-foreground">
-                    Password
-                  </Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password">Password</Label>
+                    <a href="#" className="text-xs font-medium text-emergency hover:text-emergency/80 hover:underline transition-colors">
+                      Forgot password?
+                    </a>
+                  </div>
+                  <div className="relative group">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-foreground transition-colors" />
                     <Input
-                      id="login-password"
-                      type="password"
-                      placeholder="••••••••"
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      className="pl-9 pr-9 h-11 bg-muted/30 border-border/50 focus:border-emergency/50 focus:ring-emergency/20 rounded-xl transition-all"
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
-                      className="pl-10 bg-muted border-border"
-                      required
                     />
+                    <button
+                      type="button"
+                      onClick={togglePasswordVisibility}
+                      className="absolute right-3 top-3 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
                   </div>
                 </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="remember"
+                    checked={rememberMe}
+                    onCheckedChange={(checked) => setRememberMe(checked === true)}
+                    className="border-muted-foreground/30 data-[state=checked]:bg-emergency data-[state=checked]:border-emergency rounded-[4px]"
+                  />
+                  <Label htmlFor="remember" className="text-sm font-normal text-muted-foreground cursor-pointer select-none">Remember me for 30 days</Label>
+                </div>
+              </div>
 
-                <Button
-                  type="submit"
-                  className="w-full bg-emergency hover:bg-emergency/90 text-emergency-foreground"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  ) : null}
-                  Sign In
-                </Button>
-              </form>
+              <Button
+                onClick={handleSignIn}
+                disabled={isSubmitting}
+                className="w-full h-11 bg-emergency hover:bg-emergency/90 text-white shadow-lg shadow-emergency/20 rounded-xl font-medium transition-all active:scale-[0.98]"
+              >
+                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                Sign In
+              </Button>
             </TabsContent>
 
-            {/* Sign Up Tab */}
-            <TabsContent value="signup" className="space-y-4 mt-0">
-              <CardDescription className="text-center text-muted-foreground">
-                Create an account to protect yourself and your loved ones
-              </CardDescription>
-
-              <form onSubmit={handleSignUp} className="space-y-4">
+            <TabsContent value="signup" className="mt-0 space-y-5">
+              <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="signup-name" className="text-foreground">
-                    Display Name
-                  </Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Label htmlFor="signup-name">Full Name</Label>
+                  <div className="relative group">
+                    <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-foreground transition-colors" />
                     <Input
                       id="signup-name"
-                      type="text"
-                      placeholder="Your name"
+                      placeholder="John Doe"
+                      className="pl-9 h-11 bg-muted/30 border-border/50 focus:border-emergency/50 focus:ring-emergency/20 rounded-xl transition-all"
                       value={signupName}
                       onChange={(e) => setSignupName(e.target.value)}
-                      className="pl-10 bg-muted border-border"
                     />
                   </div>
                 </div>
-
                 <div className="space-y-2">
-                  <Label htmlFor="signup-email" className="text-foreground">
-                    Email
-                  </Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Label htmlFor="signup-email">Email Address</Label>
+                  <div className="relative group">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-foreground transition-colors" />
                     <Input
                       id="signup-email"
-                      type="email"
-                      placeholder="you@example.com"
+                      placeholder="name@example.com"
+                      className="pl-9 h-11 bg-muted/30 border-border/50 focus:border-emergency/50 focus:ring-emergency/20 rounded-xl transition-all"
                       value={signupEmail}
                       onChange={(e) => setSignupEmail(e.target.value)}
-                      className="pl-10 bg-muted border-border"
-                      required
                     />
                   </div>
                 </div>
-
                 <div className="space-y-2">
-                  <Label htmlFor="signup-password" className="text-foreground">
-                    Password
-                  </Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Label htmlFor="signup-password">Password</Label>
+                  <div className="relative group">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-foreground transition-colors" />
                     <Input
                       id="signup-password"
-                      type="password"
-                      placeholder="••••••••"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Create a password"
+                      className="pl-9 pr-9 h-11 bg-muted/30 border-border/50 focus:border-emergency/50 focus:ring-emergency/20 rounded-xl transition-all"
                       value={signupPassword}
                       onChange={(e) => setSignupPassword(e.target.value)}
-                      className="pl-10 bg-muted border-border"
-                      minLength={6}
-                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={togglePasswordVisibility}
+                      className="absolute right-3 top-3 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirm-password">Confirm Password</Label>
+                  <div className="relative group">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-foreground transition-colors" />
+                    <Input
+                      id="confirm-password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Confirm your password"
+                      className="pl-9 pr-9 h-11 bg-muted/30 border-border/50 focus:border-emergency/50 focus:ring-emergency/20 rounded-xl transition-all"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
                     />
                   </div>
                 </div>
+              </div>
 
-                <Button
-                  type="submit"
-                  className="w-full bg-emergency hover:bg-emergency/90 text-emergency-foreground"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  ) : null}
-                  Create Account
-                </Button>
-              </form>
+              <Button
+                onClick={handleSignUp}
+                disabled={isSubmitting}
+                className="w-full h-11 bg-emergency hover:bg-emergency/90 text-white shadow-lg shadow-emergency/20 rounded-xl font-medium transition-all active:scale-[0.98]"
+              >
+                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                Create Account
+              </Button>
             </TabsContent>
 
-            {/* Guest Mode Divider */}
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border" />
+            <div className="mt-6">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <Separator className="w-full" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background/95 backdrop-blur-sm px-2 text-muted-foreground">
+                    Or continue with
+                  </span>
+                </div>
               </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">
-                  Or continue as
-                </span>
+
+              <div className="grid grid-cols-3 gap-3 mt-6">
+                <SocialButton icon={Chrome} label="Google" onClick={() => { }} />
+                <SocialButton icon={Smartphone} label="Apple" onClick={() => { }} />
+                <SocialButton icon={Facebook} label="Facebook" onClick={() => { }} />
+              </div>
+
+              <div className="mt-6 text-center">
+                <Button
+                  variant="ghost"
+                  className="text-xs text-muted-foreground hover:text-foreground"
+                  onClick={handleGuestMode}
+                  disabled={isSubmitting}
+                >
+                  Skip & Continue as Guest
+                </Button>
               </div>
             </div>
-
-            {/* Guest Mode Button */}
-            <Button
-              variant="outline"
-              className="w-full border-border hover:bg-muted"
-              onClick={handleGuestMode}
-              disabled={isSubmitting}
-            >
-              <UserPlus className="w-4 h-4 mr-2" />
-              Continue as Guest
-            </Button>
-
-            <p className="text-xs text-center text-muted-foreground">
-              Guest accounts have limited features. Sign up to save your emergency contacts.
-            </p>
           </CardContent>
-        </Tabs>
-      </Card>
+        </Card>
+
+        <p className="text-center text-xs text-muted-foreground mt-8">
+          By clicking continue, you agree to our <a href="#" className="underline hover:text-foreground">Terms of Service</a> and <a href="#" className="underline hover:text-foreground">Privacy Policy</a>.
+        </p>
+      </Tabs>
     </div>
   );
 };

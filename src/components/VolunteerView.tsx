@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Switch } from '@/components/ui/switch';
 import { MapPin, Navigation, Clock, CheckCircle, User, AlertTriangle, Shield } from 'lucide-react';
 import { useSOS } from '@/contexts/SOSContext';
 import { Button } from '@/components/ui/button';
 
 export const VolunteerView = () => {
+  const [isAvailable, setIsAvailable] = useState(true);
   const { state, nearbyVolunteers, location } = useSOS();
   const isEmergencyActive = state === 'recording' || state === 'countdown';
 
@@ -22,12 +25,23 @@ export const VolunteerView = () => {
         </div>
       </div>
 
-      <div className="flex-1 p-4 space-y-4 overflow-auto">
+      {/* User Status Bar */}
+      <div className="bg-card/50 backdrop-blur-sm border-b border-border px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className={`w-2.5 h-2.5 rounded-full transition-colors duration-300 ${isAvailable ? 'bg-success shadow-[0_0_8px_hsl(var(--success))]' : 'bg-muted-foreground'}`} />
+          <span className="text-sm font-medium text-foreground">
+            {isAvailable ? 'You are Available' : 'You are Offline'}
+          </span>
+        </div>
+        <Switch checked={isAvailable} onCheckedChange={setIsAvailable} className="scale-90" />
+      </div>
+
+      <div className="flex-1 p-4 pb-24 space-y-4 overflow-auto">
         {/* Status Banner */}
         <motion.div
           animate={{
-            backgroundColor: isEmergencyActive 
-              ? 'hsl(var(--emergency) / 0.1)' 
+            backgroundColor: isEmergencyActive
+              ? 'hsl(var(--emergency) / 0.1)'
               : 'hsl(var(--success) / 0.1)',
           }}
           className="rounded-xl p-4 border border-border"
@@ -69,7 +83,7 @@ export const VolunteerView = () => {
                 0.3 km away
               </span>
             </div>
-            
+
             <div className="space-y-3">
               <div className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-muted-foreground mt-0.5" />
@@ -80,7 +94,7 @@ export const VolunteerView = () => {
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <Clock className="w-4 h-4 text-muted-foreground" />
                 <p className="text-sm text-muted-foreground">Triggered 2 minutes ago</p>
@@ -103,7 +117,7 @@ export const VolunteerView = () => {
         {/* Nearby Volunteers */}
         <div className="space-y-3">
           <h3 className="text-sm font-medium text-muted-foreground">Nearby Volunteers</h3>
-          
+
           {nearbyVolunteers.map((volunteer, index) => (
             <motion.div
               key={volunteer.id}
@@ -122,11 +136,10 @@ export const VolunteerView = () => {
                   <span>{volunteer.distance} km away</span>
                 </div>
               </div>
-              <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                volunteer.status === 'responding' 
-                  ? 'bg-success/20 text-success' 
-                  : 'bg-muted text-muted-foreground'
-              }`}>
+              <div className={`px-2 py-1 rounded-full text-xs font-medium ${volunteer.status === 'responding'
+                ? 'bg-success/20 text-success'
+                : 'bg-muted text-muted-foreground'
+                }`}>
                 {volunteer.status === 'responding' ? 'Responding' : 'Available'}
               </div>
             </motion.div>

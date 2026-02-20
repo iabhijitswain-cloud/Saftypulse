@@ -11,14 +11,14 @@ export const HeroSection = () => {
     <section className="relative min-h-screen flex items-center overflow-hidden">
       {/* Mesh gradient background */}
       <div className="absolute inset-0 bg-background" />
-      <div 
+      <div
         className="absolute inset-0 opacity-30"
         style={{
           background: 'radial-gradient(ellipse at 20% 50%, hsl(0 84% 50% / 0.15) 0%, transparent 50%), radial-gradient(ellipse at 80% 20%, hsl(220 15% 20% / 0.8) 0%, transparent 50%), radial-gradient(ellipse at 60% 80%, hsl(0 84% 50% / 0.08) 0%, transparent 50%)',
         }}
       />
       {/* Grid overlay */}
-      <div 
+      <div
         className="absolute inset-0 opacity-[0.04]"
         style={{
           backgroundImage: 'linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)',
@@ -46,7 +46,7 @@ export const HeroSection = () => {
             </h1>
 
             <p className="text-lg text-muted-foreground max-w-lg leading-relaxed">
-              Stay connected, protected and empowered with our discreet SOS network. 
+              Stay connected, protected and empowered with our discreet SOS network.
               Alert trusted contacts and nearby volunteers, right when you need them most.
             </p>
 
@@ -98,14 +98,26 @@ export const HeroSection = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="relative flex justify-center lg:justify-end"
           >
-            <div className="relative">
-              {/* Glow behind phone */}
-              <div className="absolute inset-0 blur-3xl opacity-30 bg-emergency/40 rounded-full scale-75" />
-              <img
-                src={phoneMockup}
-                alt="SafetyPulse SOS interface on smartphone"
-                className="relative z-10 w-full max-w-md drop-shadow-2xl"
-              />
+            <div className="relative w-full max-w-lg">
+              {/* Glow behind video */}
+              <div className="absolute inset-0 blur-3xl opacity-30 bg-emergency/40 rounded-full scale-110" />
+
+              <div className="relative z-10 rounded-2xl overflow-hidden border border-border/50 bg-card/50 shadow-2xl aspect-video group">
+                <div className="absolute inset-0 bg-gradient-to-tr from-emergency/10 to-transparent pointer-events-none" />
+                <video
+                  src="https://cdn.coverr.co/videos/coverr-using-mobile-phone-top-view-4509/1080p.mp4"
+                  className="w-full h-full object-cover"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  controls
+                />
+              </div>
+
+              {/* Decorative elements */}
+              <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-emergency/10 rounded-full blur-2xl" />
+              <div className="absolute -top-6 -left-6 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl" />
             </div>
           </motion.div>
         </div>

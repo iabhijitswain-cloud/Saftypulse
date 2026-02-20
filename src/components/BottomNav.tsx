@@ -19,9 +19,10 @@ export const BottomNav = ({ currentView = 'user', onViewChange }: BottomNavProps
       navigate('/settings');
     } else {
       if (isSettings) {
-        navigate('/');
+        navigate('/app', { state: { view: tabId } });
+      } else {
+        onViewChange?.(tabId);
       }
-      onViewChange?.(tabId);
     }
   };
 
@@ -36,19 +37,18 @@ export const BottomNav = ({ currentView = 'user', onViewChange }: BottomNavProps
     <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-2 max-w-md mx-auto">
       <div className="flex justify-around">
         {tabs.map((tab) => {
-          const isActive = tab.id === 'settings' 
-            ? isSettings 
+          const isActive = tab.id === 'settings'
+            ? isSettings
             : !isSettings && currentView === tab.id;
 
           return (
             <button
               key={tab.id}
               onClick={() => handleTabClick(tab.id)}
-              className={`flex flex-col items-center gap-1 py-2 px-6 rounded-xl transition-colors relative ${
-                isActive
-                  ? 'text-foreground'
-                  : 'text-muted-foreground hover:text-foreground/80'
-              }`}
+              className={`flex flex-col items-center gap-1 py-2 px-6 rounded-xl transition-colors relative ${isActive
+                ? 'text-foreground'
+                : 'text-muted-foreground hover:text-foreground/80'
+                }`}
             >
               {isActive && (
                 <motion.div

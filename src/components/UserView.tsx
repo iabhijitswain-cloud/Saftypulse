@@ -11,7 +11,7 @@ export const UserView = () => {
   const isResolved = state === 'resolved' || state === 'cancelled' || state === 'duress';
 
   return (
-    <div className="flex flex-col h-full overflow-auto">
+    <div className="flex flex-col h-full overflow-auto pb-24">
       <AnimatePresence mode="wait">
         {isReady && (
           <motion.div

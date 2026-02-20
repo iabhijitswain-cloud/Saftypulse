@@ -31,6 +31,27 @@ export const Features = () => {
           </p>
         </motion.div>
 
+        {/* Feature Spotlight: Duress PIN */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          className="mb-16 max-w-4xl mx-auto bg-card/40 backdrop-blur-sm border border-emergency/20 rounded-2xl p-8 text-center relative overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-emergency/5 via-transparent to-emergency/5" />
+          <div className="relative z-10 flex flex-col items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-emergency/10 flex items-center justify-center animate-pulse">
+              <Shield className="w-6 h-6 text-emergency" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-foreground">Featured: Duress PIN Protection</h3>
+              <p className="text-muted-foreground mt-2 max-w-2xl">
+                A critical safety layer that works when you're compromised. Enter your preset <span className="text-emergency/80 font-medium">Duress PIN</span> to fake a deactivation while silently dispatching an SOS with recorded evidence to your Guardian Circle.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((feature, i) => (
             <motion.div

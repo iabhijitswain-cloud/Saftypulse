@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { BottomNav } from '@/components/BottomNav';
 import { UserView } from '@/components/UserView';
@@ -8,7 +9,18 @@ import { MomentsView } from '@/components/MomentsView';
 type View = 'user' | 'volunteer' | 'moments';
 
 const Index = () => {
-  const [currentView, setCurrentView] = useState<View>('user');
+  const location = useLocation();
+  const [currentView, setCurrentView] = useState<View>(() => {
+    return (location.state as any)?.view || 'user';
+  });
+
+  useEffect(() => {
+    if ((location.state as any)?.view) {
+      setCurrentView((location.state as any).view);
+      // Clean up the state so refreshing doesn't keep forcing this view if they navigate away
+      window.history.replaceState({}, document.title)
+    }
+  }, [location.state]);
 
   const renderView = () => {
     switch (currentView) {

@@ -93,13 +93,12 @@ export const CountdownTimer = () => {
                   transition={{ duration: 0.5 }}
                 />
               </svg>
-              
+
               {/* Timer content */}
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <Shield className={`w-8 h-8 mb-2 ${countdownTime < 60 ? 'text-emergency' : 'text-warning'}`} />
-                <span className={`text-4xl font-bold font-mono countdown-pulse ${
-                  countdownTime < 60 ? 'text-emergency' : 'text-warning'
-                }`}>
+                <span className={`text-4xl font-bold font-mono countdown-pulse ${countdownTime < 60 ? 'text-emergency' : 'text-warning'
+                  }`}>
                   {formatTime(countdownTime)}
                 </span>
                 <span className="text-xs text-muted-foreground mt-1">until police alert</span>
@@ -145,9 +144,17 @@ export const CountdownTimer = () => {
               Return to Home
             </Button>
             {/* Hidden indicator for debugging - remove in production */}
-            <p className="text-xs text-muted-foreground/30 mt-8">
-              Stealth tracking active
-            </p>
+            {/* Developer-only Indicator for Duress Mode Testing */}
+            {import.meta.env.DEV && (
+              <div className="fixed bottom-6 right-6 z-50 opacity-20 hover:opacity-100 transition-opacity duration-300 cursor-default">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-black/50 backdrop-blur-sm rounded-full border border-red-500/30">
+                  <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
+                  <span className="text-[10px] font-mono font-bold text-red-400 uppercase tracking-widest">
+                    DURESS ACTIVE
+                  </span>
+                </div>
+              </div>
+            )}
           </motion.div>
         )}
 
@@ -157,9 +164,8 @@ export const CountdownTimer = () => {
             animate={{ opacity: 1, scale: 1 }}
             className="flex flex-col items-center gap-4"
           >
-            <div className={`w-24 h-24 rounded-full flex items-center justify-center ${
-              isCancelled ? 'bg-success/20 safe-glow' : 'bg-emergency/20 emergency-glow'
-            }`}>
+            <div className={`w-24 h-24 rounded-full flex items-center justify-center ${isCancelled ? 'bg-success/20 safe-glow' : 'bg-emergency/20 emergency-glow'
+              }`}>
               <Shield className={`w-12 h-12 ${isCancelled ? 'text-success' : 'text-emergency'}`} />
             </div>
             <div className="text-center">
