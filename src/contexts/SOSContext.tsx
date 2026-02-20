@@ -162,26 +162,25 @@ export const SOSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   }, [state, countdownTime]);
 
-  // Simulate contact notifications
+  // Simulate contact notifications UI (Simultaneous Broadcast)
   useEffect(() => {
     if (state === 'recording' || state === 'countdown' || state === 'duress') {
-      trustedContacts.forEach((contact, index) => {
+      // Mark all trusted contacts as notified instantly
+      setTrustedContacts(current =>
+        current.map(c => ({ ...c, status: 'notified' as const }))
+      );
+
+      // Randomly simulate their responses asynchronously
+      trustedContacts.forEach(contact => {
         setTimeout(() => {
-          setTrustedContacts((current) =>
-            current.map((c) =>
-              c.id === contact.id ? { ...c, status: 'notified' as const } : c
-            )
-          );
-          setTimeout(() => {
-            if (Math.random() > 0.2) {
-              setTrustedContacts((current) =>
-                current.map((c) =>
-                  c.id === contact.id ? { ...c, status: 'responded' as const } : c
-                )
-              );
-            }
-          }, 2000 + Math.random() * 3000);
-        }, index * 1500);
+          if (Math.random() > 0.2) {
+            setTrustedContacts(current =>
+              current.map(c =>
+                c.id === contact.id ? { ...c, status: 'responded' as const } : c
+              )
+            );
+          }
+        }, 2000 + Math.random() * 3000);
       });
     }
   }, [state]);
@@ -206,11 +205,23 @@ export const SOSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     // Get location first
     const loc = await getLocation();
 
-    // Reset contacts to pending
-    setTrustedContacts((prev) => prev.map(c => ({ ...c, status: 'pending' as const })));
     setNearbyVolunteers(MOCK_VOLUNTEERS.map(v => ({ ...v, status: 'available' as const })));
     setCountdownTime(COUNTDOWN_DURATION);
     setRecordingProgress(0);
+
+    // Fetch trusted contacts FRESH directly from database Guardian Circle
+    const { data: freshContacts } = await supabase
+      .from('trusted_contacts')
+      .select('*')
+      .eq('user_id', user.id);
+
+    const mappedContacts = (freshContacts || []).map(c => ({
+      id: c.id,
+      name: c.name,
+      phone: c.phone_number,
+      status: 'pending' as const,
+    }));
+    setTrustedContacts(mappedContacts);
 
     // Create SOS alert in database
     try {
@@ -237,19 +248,14 @@ export const SOSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         });
       }
 
-      // 4. QUEUE NOTIFICATIONS TO GUARDIANS
-      // Fetch trusted contacts that are in the user's Guardian Circle settings
-      const { data: contacts } = await supabase
-        .from('trusted_contacts')
-        .select('*')
-        .eq('user_id', user.id);
-
-      if (contacts && contacts.length > 0) {
-        const notifications = contacts.map(contact => ({
+      // 4. QUEUE NOTIFICATIONS TO ALL GUARDIANS SIMULTANEOUSLY
+      if (freshContacts && freshContacts.length > 0) {
+        const userName = user.user_metadata?.display_name || user.email || 'A user';
+        const notifications = freshContacts.map(contact => ({
           user_id: user.id,
           alert_id: alert.id,
           recipient_phone: contact.phone_number,
-          message_body: `EMERGENCY SOS: A user has activated their SOS signal. They may be in danger. Location: https://maps.google.com/?q=${loc?.latitude || 0},${loc?.longitude || 0}`,
+          message_body: `EMERGENCY SOS: ${userName} is in an emergency and has activated their SOS alarm. They may be in danger. Location: https://maps.google.com/?q=${loc?.latitude || 0},${loc?.longitude || 0}`,
           status: 'pending'
         }));
 
