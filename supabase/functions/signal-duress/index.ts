@@ -89,9 +89,16 @@ serve(async (req: Request) => {
 
             await supabaseClient.from('notification_queue').insert(notifications);
 
-            // TRIGGER SMS PROVIDER (e.g. Twilio)
-            // Ideally, a separate worker processes the queue, but we can do it here for MVP
-            console.log(`[MOCK SMS] Dispatching to ${contacts.length} contacts...`);
+            // TRIGGER SMS PROVIDER
+            // Invoke the process-sms-queue function to process the newly inserted notifications
+            console.log(`[SMS-QUEUE] Dispatching to ${contacts.length} contacts...`);
+
+            // We invoke the function asynchronously (fire-and-forget) so we don't block the duress response
+            supabaseClient.functions.invoke('process-sms-queue', {
+                headers: {
+                    Authorization: authHeader // Pass along the user's JWT
+                }
+            }).catch((err: any) => console.error("Error triggering process-sms-queue:", err));
         }
 
         return new Response(

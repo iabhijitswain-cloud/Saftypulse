@@ -6,10 +6,8 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
-  isGuest: boolean;
   signUp: (email: string, password: string, displayName?: string) => Promise<{ data: { user: User | null; session: Session | null } | null; error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ data: { user: User | null; session: Session | null } | null; error: Error | null }>;
-  signInAsGuest: () => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
 }
 
@@ -19,7 +17,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isGuest, setIsGuest] = useState(false);
 
   useEffect(() => {
     // Set up auth state listener BEFORE checking session
@@ -27,20 +24,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       async (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
-
-        if (session?.user) {
-          // Check if user is guest (using setTimeout to avoid Supabase deadlock)
-          setTimeout(async () => {
-            const { data: profile } = await supabase
-              .from('profiles')
-              .select('is_guest')
-              .eq('id', session.user.id)
-              .single();
-            setIsGuest(profile?.is_guest ?? false);
-          }, 0);
-        } else {
-          setIsGuest(false);
-        }
 
         setIsLoading(false);
       }
@@ -78,26 +61,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { data, error: error as Error | null };
   };
 
-  const signInAsGuest = async () => {
-    const { error } = await supabase.auth.signInAnonymously({
-      options: {
-        data: {
-          display_name: 'Guest',
-          is_guest: true,
-        },
-      },
-    });
-
-    if (!error) {
-      setIsGuest(true);
-    }
-
-    return { error: error as Error | null };
-  };
-
   const signOut = async () => {
     await supabase.auth.signOut();
-    setIsGuest(false);
   };
 
   return (
@@ -106,10 +71,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user,
         session,
         isLoading,
-        isGuest,
         signUp,
         signIn,
-        signInAsGuest,
         signOut,
       }}
     >

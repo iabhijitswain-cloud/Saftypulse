@@ -14,7 +14,7 @@ import { loginSchema, signupSchema } from '@/lib/validations';
 import { z } from 'zod';
 
 const Auth = () => {
-  const { user, isLoading, signIn, signUp, signInAsGuest } = useAuth();
+  const { user, isLoading, signIn, signUp } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -123,24 +123,7 @@ const Auth = () => {
     setIsSubmitting(false);
   };
 
-  const handleGuestMode = async () => {
-    setIsSubmitting(true);
-    const { error } = await signInAsGuest();
 
-    if (error) {
-      toast({
-        title: 'Guest mode failed',
-        description: error.message,
-        variant: 'destructive',
-      });
-    } else {
-      toast({
-        title: 'Guest mode activated',
-        description: 'You can now use SafetyPulse. Create an account to save your data.',
-      });
-    }
-    setIsSubmitting(false);
-  };
 
   const SocialButton = ({ icon: Icon, label, onClick }: { icon: any, label: string, onClick?: () => void }) => (
     <Button variant="outline" className="w-full flex items-center justify-center gap-2 h-11 hover:bg-muted transition-colors rounded-xl" onClick={onClick}>
@@ -345,16 +328,7 @@ const Auth = () => {
                 <SocialButton icon={Facebook} label="Facebook" onClick={() => { }} />
               </div>
 
-              <div className="mt-6 text-center">
-                <Button
-                  variant="ghost"
-                  className="text-xs text-muted-foreground hover:text-foreground"
-                  onClick={handleGuestMode}
-                  disabled={isSubmitting}
-                >
-                  Skip & Continue as Guest
-                </Button>
-              </div>
+
             </div>
           </CardContent>
         </Card>

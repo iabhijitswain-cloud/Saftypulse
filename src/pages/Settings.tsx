@@ -18,7 +18,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 const Settings = () => {
-  const { user, isGuest, signOut, isLoading } = useAuth();
+  const { user, signOut, isLoading } = useAuth();
   const navigate = useNavigate();
   const [currentView, setCurrentView] = useState<'user' | 'volunteer' | 'moments'>('user');
 
@@ -51,11 +51,6 @@ const Settings = () => {
                 <CardTitle className="text-lg text-foreground">
                   {user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'User'}
                 </CardTitle>
-                {isGuest && (
-                  <span className="px-2 py-0.5 text-xs rounded-full bg-warning/20 text-warning">
-                    Guest
-                  </span>
-                )}
               </div>
               <CardDescription className="text-muted-foreground flex items-center gap-1">
                 <Mail className="w-3 h-3" />
@@ -64,26 +59,6 @@ const Settings = () => {
             </div>
           </CardHeader>
 
-          {isGuest && (
-            <CardContent className="pt-2">
-              <div className="p-3 rounded-lg bg-warning/10 border border-warning/20">
-                <div className="flex items-center gap-2 text-warning mb-1">
-                  <Crown className="w-4 h-4" />
-                  <span className="font-medium text-sm">Upgrade Your Account</span>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Create a full account to save your emergency contacts and settings permanently.
-                </p>
-                <Button
-                  size="sm"
-                  className="mt-3 bg-warning hover:bg-warning/90 text-warning-foreground"
-                  onClick={() => navigate('/auth')}
-                >
-                  Create Account
-                </Button>
-              </div>
-            </CardContent>
-          )}
         </Card>
 
         {/* User Phone Wrapper */}
