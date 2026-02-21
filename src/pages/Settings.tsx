@@ -6,13 +6,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Header } from '@/components/Header';
 import { BottomNav } from '@/components/BottomNav';
 import { useState } from 'react';
-import { 
-  User, 
-  LogOut, 
-  Mail, 
+import {
+  User,
+  LogOut,
+  Mail,
   Shield,
   Crown,
-  Loader2
+  Loader2,
+  Camera,
+  PhoneCall
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -93,6 +95,40 @@ const Settings = () => {
           </div>
 
           <PinSetup />
+
+          <Card className="bg-card border-border">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-2 mb-1">
+                <Camera className="w-5 h-5 text-emergency" />
+                <CardTitle className="text-base text-foreground">Incident Log</CardTitle>
+              </div>
+              <CardDescription className="text-sm text-muted-foreground">
+                Create a secure way for users to log suspicious individuals or incidents with photos, notes, and geotags.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" className="w-full border-border hover:bg-accent hover:text-accent-foreground transition-all">
+                Open Incident Log
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-card border-border">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-2 mb-1">
+                <PhoneCall className="w-5 h-5 text-emergency" />
+                <CardTitle className="text-base text-foreground">Fake Call Escape</CardTitle>
+              </div>
+              <CardDescription className="text-sm text-muted-foreground">
+                Design a realistic fake call escape feature with customizable caller name, ringtone, and timing to quickly get out of dangerous situations.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" className="w-full border-border hover:bg-accent hover:text-accent-foreground transition-all">
+                Configure Fake Call
+              </Button>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Guardian Circle */}
