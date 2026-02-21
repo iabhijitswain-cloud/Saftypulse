@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Shield, Wifi, Lock, Bell, Eye, Zap, MapPin, Users } from 'lucide-react';
+import { Shield, Wifi, Lock, Bell, Eye, Zap, MapPin, Users, Camera, PhoneCall } from 'lucide-react';
 
 const features = [
   { icon: Shield, title: 'Duress PIN', description: 'A fake PIN that silently alerts authorities while appearing to deactivate the alarm.' },
@@ -10,6 +10,8 @@ const features = [
   { icon: Zap, title: 'Instant Activation', description: 'One-tap or gesture-based trigger. Works even from lock screen.' },
   { icon: MapPin, title: 'Live GPS Tracking', description: 'Real-time location sharing with trusted contacts and emergency services.' },
   { icon: Users, title: 'Volunteer Network', description: 'Nearby verified volunteers are alerted to provide immediate physical assistance.' },
+  { icon: Camera, title: 'Incident Logging', description: 'Create a secure way for users to log suspicious individuals or incidents with photos, notes, and geotags.' },
+  { icon: PhoneCall, title: 'Fake Call Escape', description: 'Design a realistic fake call escape feature with customizable caller name, ringtone, and timing.' },
 ];
 
 export const Features = () => {
@@ -52,7 +54,7 @@ export const Features = () => {
           </div>
         </motion.div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, i) => (
             <motion.div
               key={feature.title}
