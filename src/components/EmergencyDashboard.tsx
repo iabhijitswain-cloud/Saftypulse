@@ -65,9 +65,16 @@ export const EmergencyDashboard = () => {
         </div>
         {location && (
           <div className="bg-muted/50 rounded-lg p-3 text-sm">
-            <p className="text-muted-foreground font-mono text-xs">
-              {location.latitude.toFixed(6)}°N, {location.longitude.toFixed(6)}°W
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-muted-foreground font-mono text-xs">
+                {Math.abs(location.latitude)}°{location.latitude >= 0 ? 'N' : 'S'}, {Math.abs(location.longitude)}°{location.longitude >= 0 ? 'E' : 'W'}
+              </p>
+              {location.accuracy !== undefined && (
+                <span className="text-[10px] text-muted-foreground/80 bg-background/50 px-1.5 py-0.5 rounded border border-border/50">
+                  ±{Math.round(location.accuracy)}m
+                </span>
+              )}
+            </div>
             <p className="text-foreground mt-1">{location.address}</p>
           </div>
         )}
@@ -142,9 +149,9 @@ export const EmergencyDashboard = () => {
               <div className="flex items-center gap-2">
                 {getStatusIcon(contact.status)}
                 <span className={`text-xs font-medium ${contact.status === 'responded' ? 'text-success' :
-                    contact.status === 'notified' ? 'text-warning' :
-                      contact.status === 'failed' ? 'text-emergency' :
-                        'text-muted-foreground'
+                  contact.status === 'notified' ? 'text-warning' :
+                    contact.status === 'failed' ? 'text-emergency' :
+                      'text-muted-foreground'
                   }`}>
                   {getStatusText(contact.status)}
                 </span>

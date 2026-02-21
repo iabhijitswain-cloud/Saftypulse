@@ -91,7 +91,7 @@ export const VolunteerView = () => {
                 <div>
                   <p className="text-sm text-foreground">{location.address}</p>
                   <p className="text-xs text-muted-foreground font-mono">
-                    {location.latitude.toFixed(4)}°N, {location.longitude.toFixed(4)}°W
+                    {Math.abs(location.latitude)}°{location.latitude >= 0 ? 'N' : 'S'}, {Math.abs(location.longitude)}°{location.longitude >= 0 ? 'E' : 'W'}
                   </p>
                 </div>
               </div>

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Shield, Users, Settings, Clock } from 'lucide-react';
+import { Home, HeartHandshake, Map, Settings } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 type View = 'user' | 'volunteer' | 'moments';
@@ -27,15 +27,15 @@ export const BottomNav = ({ currentView = 'user', onViewChange }: BottomNavProps
   };
 
   const tabs = [
-    { id: 'user' as const, icon: Shield, label: 'My Safety' },
-    { id: 'volunteer' as const, icon: Users, label: 'Volunteer' },
-    { id: 'moments' as const, icon: Clock, label: 'Moments' },
+    { id: 'user' as const, icon: Home, label: 'Home' },
+    { id: 'volunteer' as const, icon: HeartHandshake, label: 'Volunteer' },
+    { id: 'moments' as const, icon: Map, label: 'SafeMap' },
     { id: 'settings' as const, icon: Settings, label: 'Settings' },
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-2 max-w-md mx-auto">
-      <div className="flex justify-around">
+    <nav className="fixed bottom-4 left-4 right-4 bg-[#0a0a0a]/90 backdrop-blur-md border border-white/5 rounded-[2rem] p-2 max-w-md mx-auto z-50">
+      <div className="flex justify-around items-center">
         {tabs.map((tab) => {
           const isActive = tab.id === 'settings'
             ? isSettings
@@ -45,20 +45,20 @@ export const BottomNav = ({ currentView = 'user', onViewChange }: BottomNavProps
             <button
               key={tab.id}
               onClick={() => handleTabClick(tab.id)}
-              className={`flex flex-col items-center gap-1 py-2 px-6 rounded-xl transition-colors relative ${isActive
-                ? 'text-foreground'
-                : 'text-muted-foreground hover:text-foreground/80'
+              className={`flex flex-col items-center justify-center gap-1 w-[72px] h-[72px] rounded-full transition-colors relative ${isActive
+                ? 'text-white'
+                : 'text-[#888] hover:text-white/80'
                 }`}
             >
               {isActive && (
                 <motion.div
                   layoutId="activeTab"
-                  className="absolute inset-0 bg-muted rounded-xl"
+                  className="absolute inset-0 bg-[#E5252A] rounded-full"
                   transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                 />
               )}
-              <tab.icon className="w-5 h-5 relative z-10" />
-              <span className="text-xs font-medium relative z-10">{tab.label}</span>
+              <tab.icon className={`w-6 h-6 relative z-10 ${isActive ? 'text-white' : 'text-[#888]'}`} />
+              <span className={`text-[11px] font-medium relative z-10 mt-1 ${isActive ? 'text-white' : 'text-[#888]'}`}>{tab.label}</span>
             </button>
           );
         })}

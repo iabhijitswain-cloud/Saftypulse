@@ -1,4 +1,14 @@
-project_id = "emfdlrhfbhkcivsrfhcq"
+project_id = "obcxzbuefmlktnugsazj"
 
 [functions.rate-limit]
 verify_jwt = false
+[functions.process-sms-queue]
+enabled = true
+verify_jwt = true
+import_map = "./functions/process-sms-queue/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/process-sms-queue/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/process-sms-queue/*.html" ]

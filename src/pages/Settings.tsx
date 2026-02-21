@@ -1,6 +1,7 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { GuardianCircle } from '@/components/GuardianCircle';
 import { PinSetup } from '@/components/PinSetup';
+import { ProfileSettings } from '@/components/ProfileSettings';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Header } from '@/components/Header';

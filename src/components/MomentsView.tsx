@@ -297,7 +297,7 @@ export const MomentsView = () => {
               {/* Location Cluster Map Mock UI */}
               {alert.location_text && (
                 <div className="relative overflow-hidden bg-muted/30 rounded-lg border border-border/50">
-                  <div className="h-20 w-full bg-[url('https://api.mapbox.com/styles/v1/mapbox/dark-v11/static/pin-s-l+ef4444(-122.42,37.77)/-122.42,37.77,13,0/600x200?access_token=pk.eyJ1IjoibW9jay1rZXkiLCJhIjoiY20wYjFmcGI1MDUyZDJqcHhuZ2Jza28wbSJ9.mock')] bg-cover bg-center opacity-60 mix-blend-luminosity hover:mix-blend-normal transition-all" />
+                  <div className="h-20 w-full bg-[url('https://api.mapbox.com/styles/v1/mapbox/dark-v11/static/pin-s-l+ef4444(77.21,28.61)/77.21,28.61,13,0/600x200?access_token=pk.eyJ1IjoibW9jay1rZXkiLCJhIjoiY20wYjFmcGI1MDUyZDJqcHhuZ2Jza28wbSJ9.mock')] bg-cover bg-center opacity-60 mix-blend-luminosity hover:mix-blend-normal transition-all" />
                   <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-background via-background/90 to-transparent pt-6">
                     <div className="flex items-start gap-2 text-sm text-foreground">
                       <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-red-500" />

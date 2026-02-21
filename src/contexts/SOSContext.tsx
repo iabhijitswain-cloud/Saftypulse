@@ -45,9 +45,9 @@ interface SOSContextType {
 const SOSContext = createContext<SOSContextType | undefined>(undefined);
 
 const MOCK_VOLUNTEERS: Volunteer[] = [
-  { id: '1', name: 'Officer Martinez', distance: 0.3, status: 'available' },
-  { id: '2', name: 'Dr. Patel', distance: 0.8, status: 'available' },
-  { id: '3', name: 'James Wilson', distance: 1.2, status: 'available' },
+  { id: '1', name: 'Inspector Sharma', distance: 0.3, status: 'available' },
+  { id: '2', name: 'Dr. Gupta', distance: 0.8, status: 'available' },
+  { id: '3', name: 'Rahul Verma', distance: 1.2, status: 'available' },
 ];
 
 const COUNTDOWN_DURATION = 300; // 5 minutes in seconds
@@ -99,13 +99,8 @@ export const SOSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const getLocation = useCallback((): Promise<LocationData | null> => {
     return new Promise((resolve) => {
       if (!navigator.geolocation) {
-        // Fallback to mock data
-        resolve({
-          latitude: 40.7128,
-          longitude: -74.0060,
-          address: 'Location unavailable',
-          accuracy: 0,
-        });
+        console.warn('Geolocation is not supported by this browser.');
+        resolve(null);
         return;
       }
 
@@ -119,18 +114,12 @@ export const SOSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           setLocation(loc);
           resolve(loc);
         },
-        () => {
-          // Fallback on error
-          const fallback: LocationData = {
-            latitude: 40.7128,
-            longitude: -74.0060,
-            address: 'Location access denied',
-            accuracy: 0,
-          };
-          setLocation(fallback);
-          resolve(fallback);
+        (error) => {
+          console.error('Geolocation error:', error);
+          // Resolve null on error instead of mocked fake coordinates
+          resolve(null);
         },
-        { enableHighAccuracy: true, timeout: 10000 }
+        { enableHighAccuracy: true, timeout: 30000, maximumAge: 0 }
       );
     });
   }, []);
@@ -173,26 +162,25 @@ export const SOSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   }, [state, countdownTime]);
 
-  // Simulate contact notifications
+  // Simulate contact notifications UI (Simultaneous Broadcast)
   useEffect(() => {
     if (state === 'recording' || state === 'countdown' || state === 'duress') {
-      trustedContacts.forEach((contact, index) => {
+      // Mark all trusted contacts as notified instantly
+      setTrustedContacts(current =>
+        current.map(c => ({ ...c, status: 'notified' as const }))
+      );
+
+      // Randomly simulate their responses asynchronously
+      trustedContacts.forEach(contact => {
         setTimeout(() => {
-          setTrustedContacts((current) =>
-            current.map((c) =>
-              c.id === contact.id ? { ...c, status: 'notified' as const } : c
-            )
-          );
-          setTimeout(() => {
-            if (Math.random() > 0.2) {
-              setTrustedContacts((current) =>
-                current.map((c) =>
-                  c.id === contact.id ? { ...c, status: 'responded' as const } : c
-                )
-              );
-            }
-          }, 2000 + Math.random() * 3000);
-        }, index * 1500);
+          if (Math.random() > 0.2) {
+            setTrustedContacts(current =>
+              current.map(c =>
+                c.id === contact.id ? { ...c, status: 'responded' as const } : c
+              )
+            );
+          }
+        }, 2000 + Math.random() * 3000);
       });
     }
   }, [state]);
@@ -223,6 +211,20 @@ export const SOSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setCountdownTime(COUNTDOWN_DURATION);
     setRecordingProgress(0);
 
+    // Fetch trusted contacts FRESH directly from database Guardian Circle
+    const { data: freshContacts } = await supabase
+      .from('trusted_contacts')
+      .select('*')
+      .eq('user_id', user.id);
+
+    const mappedContacts = (freshContacts || []).map(c => ({
+      id: c.id,
+      name: c.name,
+      phone: c.phone_number,
+      status: 'pending' as const,
+    }));
+    setTrustedContacts(mappedContacts);
+
     // Create SOS alert in database
     try {
       const { data: alert, error } = await supabase
@@ -246,6 +248,57 @@ export const SOSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           longitude: loc.longitude,
           accuracy: loc.accuracy,
         });
+      }
+
+      // 4. QUEUE NOTIFICATIONS TO ALL GUARDIANS SIMULTANEOUSLY
+      if (freshContacts && freshContacts.length > 0) {
+        // Fetch user's registered phone
+        const { data: userProfile } = await supabase
+          .from('profiles')
+          .select('phone_number')
+          .eq('id', user.id)
+          .single();
+
+        const userName = user.user_metadata?.display_name || user.email || 'A user';
+        const phoneStr = userProfile?.phone_number ? ` (Ph: ${userProfile.phone_number})` : '';
+        const rawMessage = `EMERGENCY SOS: ${userName}${phoneStr} is in an emergency and has activated their SOS alarm. They may be in danger. Location: https://maps.google.com/?q=${loc?.latitude || 0},${loc?.longitude || 0}`;
+
+        const notifications = freshContacts.map(contact => ({
+          user_id: user.id,
+          alert_id: alert.id,
+          recipient_phone: contact.phone_number,
+          message_body: rawMessage,
+          status: 'pending'
+        }));
+
+        await (supabase as any).from('notification_queue').insert(notifications);
+        // 5. TRIGGER NATIVE DEVICE SMS (No Twilio Required)
+        // Use the device's native cellular network to text all guardians for free
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isAndroid = /Android/.test(navigator.userAgent);
+        const isMobile = isIOS || isAndroid;
+
+        // iOS uses comma for multiple numbers, Android conventionally uses semicolon
+        const phoneSep = isIOS ? ',' : ';';
+        const phoneNumbers = freshContacts.map(c => c.phone_number).join(phoneSep);
+        const messageBody = encodeURIComponent(rawMessage);
+
+        // Open the native SMS app pre-filled with all Guardian Circle contacts and the distress message
+        const separator = isIOS ? '&' : '?';
+        const smsUrl = `sms:${phoneNumbers}${separator}body=${messageBody}`;
+
+        if (isMobile) {
+          // Reliable trick to open SMS dialects on mobile browsers
+          const link = document.createElement('a');
+          link.href = smsUrl;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        } else {
+          console.warn('Native SMS cannot be automatically opened on non-mobile desktop devices.');
+          // Try to open it gracefully for desktop apps like Phone Link
+          window.open(smsUrl, '_blank');
+        }
       }
     } catch (error) {
       console.error('Error creating SOS alert:', error);

@@ -22,7 +22,7 @@ export const UserView = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex-1 flex flex-col items-center justify-center p-6"
+            className="flex-1 flex flex-col items-center justify-start pt-6 px-6"
           >
             <motion.div
               initial={{ y: -20, opacity: 0 }}
@@ -30,9 +30,34 @@ export const UserView = () => {
               transition={{ delay: 0.1 }}
               className="text-center mb-10 w-full"
             >
-              <h2 className="text-2xl font-bold text-foreground mb-2">You're Protected</h2>
-              <p className="text-muted-foreground">
-                Tap the button below in case of emergency
+              <div className="w-2 h-2 rounded-full bg-[#00E599] animate-pulse"></div>
+              <span className="text-sm font-semibold tracking-wide">Live Monitoring Active</span>
+            </motion.div>
+
+            <motion.div
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="text-center mb-12"
+            >
+              <h2 className="text-[2rem] font-medium text-white mb-2 tracking-tight">You're Protected</h2>
+              <p className="text-[#888] text-[1.05rem]">
+                Tap the button below in case of<br />emergency
+              </p>
+            </motion.div>
+
+            <div className="flex-1 flex flex-col items-center justify-center w-full mt-[-20px]">
+              <SOSButton />
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="w-full max-w-[320px] bg-white/[0.03] border border-white/10 rounded-2xl p-4 mt-8 mb-4"
+            >
+              <p className="text-[#888] text-sm text-center italic leading-relaxed">
+                This will notify your 5 trusted contacts and share your live GPS location with local emergency services immediately.
               </p>
             </motion.div>
 
