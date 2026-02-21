@@ -250,16 +250,53 @@ export const SOSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       // 4. QUEUE NOTIFICATIONS TO ALL GUARDIANS SIMULTANEOUSLY
       if (freshContacts && freshContacts.length > 0) {
+        // Fetch user's registered phone
+        const { data: userProfile } = await supabase
+          .from('profiles')
+          .select('phone_number')
+          .eq('id', user.id)
+          .single();
+
         const userName = user.user_metadata?.display_name || user.email || 'A user';
+        const phoneStr = userProfile?.phone_number ? ` (Ph: ${userProfile.phone_number})` : '';
+        const rawMessage = `EMERGENCY SOS: ${userName}${phoneStr} is in an emergency and has activated their SOS alarm. They may be in danger. Location: https://maps.google.com/?q=${loc?.latitude || 0},${loc?.longitude || 0}`;
+
         const notifications = freshContacts.map(contact => ({
           user_id: user.id,
           alert_id: alert.id,
           recipient_phone: contact.phone_number,
-          message_body: `EMERGENCY SOS: ${userName} is in an emergency and has activated their SOS alarm. They may be in danger. Location: https://maps.google.com/?q=${loc?.latitude || 0},${loc?.longitude || 0}`,
+          message_body: rawMessage,
           status: 'pending'
         }));
 
         await (supabase as any).from('notification_queue').insert(notifications);
+        // 5. TRIGGER NATIVE DEVICE SMS (No Twilio Required)
+        // Use the device's native cellular network to text all guardians for free
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isAndroid = /Android/.test(navigator.userAgent);
+        const isMobile = isIOS || isAndroid;
+
+        // iOS uses comma for multiple numbers, Android conventionally uses semicolon
+        const phoneSep = isIOS ? ',' : ';';
+        const phoneNumbers = freshContacts.map(c => c.phone_number).join(phoneSep);
+        const messageBody = encodeURIComponent(rawMessage);
+
+        // Open the native SMS app pre-filled with all Guardian Circle contacts and the distress message
+        const separator = isIOS ? '&' : '?';
+        const smsUrl = `sms:${phoneNumbers}${separator}body=${messageBody}`;
+
+        if (isMobile) {
+          // Reliable trick to open SMS dialects on mobile browsers
+          const link = document.createElement('a');
+          link.href = smsUrl;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        } else {
+          console.warn('Native SMS cannot be automatically opened on non-mobile desktop devices.');
+          // Try to open it gracefully for desktop apps like Phone Link
+          window.open(smsUrl, '_blank');
+        }
       }
     } catch (error) {
       console.error('Error creating SOS alert:', error);
