@@ -12,11 +12,11 @@ export const SOSButton = () => {
         onClick={triggerSOS}
         disabled={!isReady}
         className={`
-          relative w-48 h-48 rounded-full flex items-center justify-center
-          transition-all duration-300 focus:outline-none
-          ${isReady 
-            ? 'bg-emergency hover:scale-105 active:scale-95 emergency-glow cursor-pointer' 
-            : 'bg-muted cursor-not-allowed opacity-50'
+          relative w-64 h-64 rounded-full flex items-center justify-center
+          transition-all duration-300 focus:outline-none overflow-hidden
+          ${isReady
+            ? 'cursor-pointer'
+            : 'cursor-not-allowed opacity-50'
           }
         `}
         whileHover={isReady ? { scale: 1.05 } : {}}
@@ -25,23 +25,31 @@ export const SOSButton = () => {
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.3 }}
       >
-        <div className="absolute inset-0 rounded-full bg-emergency/20 animate-ping" style={{ animationDuration: '2s' }} />
-        <div className="flex flex-col items-center gap-2">
-          <Shield className="w-16 h-16 text-emergency-foreground" strokeWidth={2} />
-          <span className="text-emergency-foreground font-bold text-xl tracking-wide">
+        {/* Glow effect layer */}
+        <div className="absolute inset-0 rounded-full bg-[#E5252A]/20 blur-3xl animate-pulse"></div>
+        {/* Border / Outer glow */}
+        <div className="absolute inset-0 rounded-full border border-white/20 bg-gradient-to-br from-[#E5252A]/90 to-[#b2181d]/100 shadow-[0_0_80px_rgba(229,37,42,0.4)]"></div>
+        {/* Inner glass highlight */}
+        <div className="absolute inset-0 rounded-full bg-gradient-to-b from-white/20 to-transparent opacity-50"></div>
+
+        <div className="relative flex flex-col items-center justify-center mt-2">
+          {/* Small shield icon with 'SOS' text */}
+          <div className="flex flex-col items-center justify-center relative mb-4">
+            <Shield className="w-12 h-14 text-white fill-white" strokeWidth={0} />
+            <span className="absolute top-[55%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#E5252A] text-[9px] font-bold tracking-widest mt-[-2px]">
+              SOS
+            </span>
+          </div>
+          <span className="text-white font-light text-5xl tracking-[0.1em] border-b-2 border-white/40 pb-1 px-1">
             SOS
           </span>
         </div>
       </motion.button>
 
-      <div className="flex items-center gap-2 text-muted-foreground">
-        <AlertTriangle className="w-4 h-4" />
-        <span className="text-sm">Hold or tap to activate emergency mode</span>
+      <div className="flex items-center justify-center gap-2 mt-12 mb-2 text-[#E5252A] font-medium text-sm w-full">
+        <AlertTriangle className="w-4 h-4 fill-[#E5252A] text-[#111]" />
+        <span>Hold or tap to activate emergency mode</span>
       </div>
-
-      <p className="text-xs text-muted-foreground/60 text-center max-w-xs">
-        This will notify your trusted contacts and nearby volunteers with your location
-      </p>
     </div>
   );
 };
