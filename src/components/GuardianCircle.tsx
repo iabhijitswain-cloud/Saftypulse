@@ -3,6 +3,7 @@ import { useTrustedContacts, TrustedContact, ContactInput } from '@/hooks/useTru
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import {
   Dialog,
   DialogContent,
@@ -22,24 +23,25 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  Users, 
-  Plus, 
-  Phone, 
-  User, 
-  Heart, 
-  Edit2, 
-  Trash2, 
+import {
+  Users,
+  Plus,
+  Phone,
+  User,
+  Heart,
+  Edit2,
+  Trash2,
   CheckCircle2,
   MessageSquare,
-  Loader2
+  Loader2,
+  Map
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export const GuardianCircle = () => {
   const { contacts, isLoading, addContact, updateContact, deleteContact } = useTrustedContacts();
   const { toast } = useToast();
-  
+
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingContact, setEditingContact] = useState<TrustedContact | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
@@ -239,34 +241,44 @@ export const GuardianCircle = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                    onClick={() => handleTestSMS(contact)}
-                    title="Send Test SMS"
-                  >
-                    <MessageSquare className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                    onClick={() => openEditDialog(contact)}
-                    title="Edit Contact"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                    onClick={() => setDeleteConfirmId(contact.id)}
-                    title="Remove Contact"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 mr-3 pr-3 border-r border-border/50 hidden sm:flex">
+                    <Map className="w-4 h-4 text-primary" />
+                    <div className="flex flex-col">
+                      <Label className="text-xs text-foreground cursor-pointer">Live Route</Label>
+                    </div>
+                    <Switch defaultChecked={true} className="scale-75" />
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                      onClick={() => handleTestSMS(contact)}
+                      title="Send Test SMS"
+                    >
+                      <MessageSquare className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                      onClick={() => openEditDialog(contact)}
+                      title="Edit Contact"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                      onClick={() => setDeleteConfirmId(contact.id)}
+                      title="Remove Contact"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))

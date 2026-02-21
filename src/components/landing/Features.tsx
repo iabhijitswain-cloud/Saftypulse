@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Shield, Wifi, Lock, Bell, Eye, Zap, MapPin, Users, Camera, PhoneCall } from 'lucide-react';
+import { Shield, Wifi, Lock, Bell, Eye, Zap, MapPin, Users, Camera, PhoneCall, EyeOff, ShieldAlert, Bot, Watch, Car } from 'lucide-react';
 
 const features = [
   { icon: Shield, title: 'Duress PIN', description: 'A fake PIN that silently alerts authorities while appearing to deactivate the alarm.' },
@@ -12,6 +12,11 @@ const features = [
   { icon: Users, title: 'Volunteer Network', description: 'Nearby verified volunteers are alerted to provide immediate physical assistance.' },
   { icon: Camera, title: 'Incident Logging', description: 'Create a secure way for users to log suspicious individuals or incidents with photos, notes, and geotags.' },
   { icon: PhoneCall, title: 'Fake Call Escape', description: 'Design a realistic fake call escape feature with customizable caller name, ringtone, and timing.' },
+  { icon: EyeOff, title: 'Anti-Tracking Protection', description: 'Mechanisms to prevent abusers from tracking app usage or accessing emergency logs.' },
+  { icon: ShieldAlert, title: 'Threat Model Analysis', description: 'Comprehensive security modeling addressing insider threats and external cyberattacks.' },
+  { icon: Bot, title: 'AI Safety Sentinel', description: 'Automated AI system that detects distress in your text and suggests immediate safety actions.' },
+  { icon: Watch, title: 'Wearable Integration', description: 'Sync with smartwatches or smart rings for hardware-based, subtle silent emergency activation.' },
+  { icon: Car, title: 'AI Safe Ride Tracking', description: 'AI-powered driver verification and live ride tracking. Continuously monitors route for deviations.' },
 ];
 
 export const Features = () => {
@@ -54,7 +59,7 @@ export const Features = () => {
           </div>
         </motion.div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((feature, i) => (
             <motion.div
               key={feature.title}

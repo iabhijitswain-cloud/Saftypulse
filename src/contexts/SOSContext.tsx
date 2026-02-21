@@ -213,10 +213,10 @@ export const SOSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (!user) return;
 
     setState('triggered');
-    
+
     // Get location first
     const loc = await getLocation();
-    
+
     // Reset contacts to pending
     setTrustedContacts((prev) => prev.map(c => ({ ...c, status: 'pending' as const })));
     setNearbyVolunteers(MOCK_VOLUNTEERS.map(v => ({ ...v, status: 'available' as const })));
@@ -250,7 +250,19 @@ export const SOSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     } catch (error) {
       console.error('Error creating SOS alert:', error);
     }
-    
+
+    // Trigger Haptic Feedback (Accessibility - Visually/Physically Impaired)
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate([200, 100, 200, 100, 500]);
+    }
+
+    // Trigger Voice Feedback (Accessibility - Visually Impaired)
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance("Emergency Mode Activated. Live location is tracked.");
+      window.speechSynthesis.speak(utterance);
+    }
+
     setTimeout(() => {
       setState('recording');
     }, 500);
@@ -271,14 +283,14 @@ export const SOSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (!pinData) {
       setState('cancelled');
       setIsRecording(false);
-      
+
       if (currentAlertId) {
         await supabase
           .from('sos_alerts')
           .update({ status: 'cancelled', resolved_at: new Date().toISOString() })
           .eq('id', currentAlertId);
       }
-      
+
       return 'success';
     }
 
@@ -289,14 +301,14 @@ export const SOSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       // Appear to cancel but continue in stealth mode
       setState('duress');
       setIsRecording(false);
-      
+
       if (currentAlertId) {
         await supabase
           .from('sos_alerts')
           .update({ status: 'duress', is_stealth: true })
           .eq('id', currentAlertId);
       }
-      
+
       return 'duress';
     }
 
@@ -304,14 +316,14 @@ export const SOSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (inputHash === pinData.pin_hash) {
       setState('cancelled');
       setIsRecording(false);
-      
+
       if (currentAlertId) {
         await supabase
           .from('sos_alerts')
           .update({ status: 'cancelled', resolved_at: new Date().toISOString() })
           .eq('id', currentAlertId);
       }
-      
+
       return 'success';
     }
 
@@ -322,7 +334,7 @@ export const SOSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const resolveEmergency = useCallback(async () => {
     setState('resolved');
     setIsRecording(false);
-    
+
     if (currentAlertId) {
       await supabase
         .from('sos_alerts')

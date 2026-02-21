@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Switch } from '@/components/ui/switch';
-import { MapPin, Navigation, Clock, CheckCircle, User, AlertTriangle, Shield } from 'lucide-react';
+import { MapPin, Navigation, Clock, CheckCircle, User, AlertTriangle, Shield, BellRing } from 'lucide-react';
 import { useSOS } from '@/contexts/SOSContext';
 import { Button } from '@/components/ui/button';
 
 export const VolunteerView = () => {
   const [isAvailable, setIsAvailable] = useState(true);
+  const [isCommunityAlertsEnabled, setIsCommunityAlertsEnabled] = useState(true);
   const { state, nearbyVolunteers, location } = useSOS();
   const isEmergencyActive = state === 'recording' || state === 'countdown';
 
@@ -113,6 +114,31 @@ export const VolunteerView = () => {
             </div>
           </motion.div>
         )}
+
+        {/* Verified Community Alerts */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-medium text-muted-foreground">Verified Community Alerts</h3>
+            <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full border border-primary/30">Verified</span>
+          </div>
+          <div className="bg-card rounded-xl p-4 border border-border">
+            <p className="text-sm text-foreground mb-4">
+              A secure system where verified nearby users receive alerts during emergencies for rapid community response.
+            </p>
+            <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg border border-border/50">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <BellRing className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">Community Broadcast</p>
+                  <p className="text-xs text-muted-foreground">Receive alerts within 5km</p>
+                </div>
+              </div>
+              <Switch checked={isCommunityAlertsEnabled} onCheckedChange={setIsCommunityAlertsEnabled} />
+            </div>
+          </div>
+        </div>
 
         {/* Nearby Volunteers */}
         <div className="space-y-3">
