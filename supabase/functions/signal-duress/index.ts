@@ -1,5 +1,6 @@
-
+// @ts-ignore
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+// @ts-ignore
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 const corsHeaders = {
@@ -7,7 +8,8 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-serve(async (req) => {
+// @ts-ignore
+serve(async (req: Request) => {
     // Handle CORS preflight requests
     if (req.method === 'OPTIONS') {
         return new Response(null, { headers: corsHeaders });
@@ -15,7 +17,9 @@ serve(async (req) => {
 
     try {
         const supabaseClient = createClient(
+            // @ts-ignore
             Deno.env.get('SUPABASE_URL') ?? '',
+            // @ts-ignore
             Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
         );
 
@@ -72,11 +76,10 @@ serve(async (req) => {
         const { data: contacts } = await supabaseClient
             .from('trusted_contacts')
             .select('*')
-            .eq('user_id', user.id)
-            .eq('is_verified', true);
+            .eq('user_id', user.id);
 
         if (contacts && contacts.length > 0) {
-            const notifications = contacts.map(contact => ({
+            const notifications = contacts.map((contact: any) => ({
                 user_id: user.id,
                 alert_id: alertId,
                 recipient_phone: contact.phone_number,
@@ -102,7 +105,7 @@ serve(async (req) => {
             }
         );
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('Duress Signal Error:', error);
         return new Response(
             JSON.stringify({ error: error.message }),

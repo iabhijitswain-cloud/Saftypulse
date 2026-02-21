@@ -28,7 +28,7 @@ CREATE TABLE public.trusted_contacts (
 CREATE TABLE public.user_pins (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL UNIQUE REFERENCES auth.users(id) ON DELETE CASCADE,
-  pin_hash TEXT NOT NULL,
+  pin_hash TEXT NOT NULL, 
   duress_pin_hash TEXT,
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()

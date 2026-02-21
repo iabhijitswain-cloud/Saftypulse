@@ -17,7 +17,7 @@ export const contactSchema = z.object({
   name: z.string().trim().min(1, 'Name is required').max(100, 'Name too long'),
   phone_number: z
     .string()
-    .regex(/^\+[1-9]\d{1,14}$/, 'Invalid phone number. Use E.164 format (e.g., +1234567890)'),
+    .regex(/^\+[1-9]\d{1,14}$/, 'Invalid phone number. Use E.164 format (e.g., +919876543210)'),
   relationship: z.string().trim().max(50, 'Relationship too long').optional(),
 });
 

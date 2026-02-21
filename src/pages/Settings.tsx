@@ -1,15 +1,16 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { GuardianCircle } from '@/components/GuardianCircle';
 import { PinSetup } from '@/components/PinSetup';
+import { ProfileSettings } from '@/components/ProfileSettings';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Header } from '@/components/Header';
 import { BottomNav } from '@/components/BottomNav';
 import { useState } from 'react';
-import { 
-  User, 
-  LogOut, 
-  Mail, 
+import {
+  User,
+  LogOut,
+  Mail,
   Shield,
   Crown,
   Loader2
@@ -84,6 +85,11 @@ const Settings = () => {
             </CardContent>
           )}
         </Card>
+
+        {/* User Phone Wrapper */}
+        <div className="space-y-4">
+          <ProfileSettings />
+        </div>
 
         {/* Security Section */}
         <div className="space-y-4">
